@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.mall.dao.CommodityDao">
+    <!--<resultMap id="BaseResultMap" type="org.mall.domain.Commodity">
+        <result column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="standard" property="standard" />
+        <result column="temperature" property="temperature" />
+        <result column="price" property="price" />
+        <result column="description" property="description" />
+    </resultMap>-->
+
+    <sql id="Base_Column_List">
+		id, name, standard, temperature, price, description,images
+	</sql>
+
+    <!--获取全部商品-->
+    <select id="findAll" resultType="commodity">
+        select
+        <include refid="Base_Column_List" />
+        from t_commodity
+    </select>
+
+    <!--新增商品-->
+    <insert id="insertCommodity" parameterType="commodity">
+        insert into t_commodity (name, standard, temperature, price, description,images)
+        values (#{name}, #{standard}, #{temperature}, #{price}, #{description},#{images})
+    </insert>
+
+    <!--修改商品-->
+    <update id="updateCommodity" parameterType="commodity">
+		update t_commodity set
+		name = #{name},
+		standard = #{standard},
+		temperature = #{temperature},
+		price = #{price},
+		description = #{description},
+		images=#{images}
+		where id = #{id}
+	</update>
+
+    <!--根据id获取商品-->
+    <select id="findById" resultType="commodity" parameterType="int">
+        select
+        <include refid="Base_Column_List" />
+        from t_commodity where id = #{id}
+    </select>
+
+    <!--根据id伤处商品-->
+    <delete id="deleteById" parameterType="int">
+		delete from t_commodity where id = #{id}
+	</delete>
+
+    <delete id="deleteByIds" parameterType="java.util.List">
+        delete from t_commodity where 1>2
+        or id in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <select id="getCommoditys" resultType="commodity">
+        select <include refid="Base_Column_List"/>
+        from t_commodity
+        <where>
+            <if test="name != '' and name != null">
+                <bind name="name" value="'%' + name + '%'"/>
+                 and name like #{name}
+            </if>
+        </where>
+    </select>
+    <select id="getCommodityBySearch" resultType="commodity">
+        select <include refid="Base_Column_List"/>
+        from t_commodity
+        <where>
+            <if test="search!= null and search != ''">
+                <bind name="search" value="'%'+search+'%'"/>
+                and name like #{search}
+            </if>
+        </where>
+    </select>
+</mapper>
